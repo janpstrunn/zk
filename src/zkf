@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+source "$(dirname "$(dirname "$(realpath "$0")")")/lib/files.sh"
+source "$(dirname "$(dirname "$(realpath "$0")")")/lib/variables.sh"
+
+function zkf() {
+  local zk_files=()
+  local open_files=()
+  zk_files=($(display_all_files | fzf -m --preview "bat $ZK_PATH/{+}"))
+  for file in "${zk_files[@]}"; do
+    open_files+=("$HOME/.zk/$file")
+  done
+  $EDITOR "${open_files[@]}"
+}
+
+if [[ "$(basename "$0")" =~ zkf$ ]]; then
+  zkf
+fi
