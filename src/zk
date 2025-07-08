@@ -68,10 +68,13 @@ function _list() {
 }
 
 function _fzf_files() {
-  local workspace=$1
   local zk_files=()
   local open_files=()
   mapfile -t zk_files < <(_display_all_files "$workspace" | fzf -m --preview "bat $ZK_PATH/{+}")
+
+  if [ -n "$1" ]; then
+    workspace="$ZK_PATH/$1"
+  fi
 
   for file in "${zk_files[@]}"; do
     open_files+=("$HOME/.zk/$file")
@@ -145,7 +148,10 @@ function _add_journal_entry() {
   local is_journal=1
   local requested_date=$1
   local val
-  workspace=$2
+
+  if [ -n "$2" ]; then
+    workspace="$ZK_PATH/$2"
+  fi
 
   _get_dates
 
