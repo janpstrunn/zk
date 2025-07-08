@@ -51,7 +51,7 @@ function _error() {
 function _display_all_files() {
   local workspace=$1
 
-  find "$ZK_PATH/$workspace" -type f &>/dev/null | sed -E "s|$ZK_PATH\/||"
+  find "$ZK_PATH/$workspace" -type f | sed -E "s|$ZK_PATH\/||"
 }
 
 function _display_workspaces() {
@@ -72,10 +72,10 @@ function _fzf_files() {
   local open_files=()
 
   if [ -n "$1" ]; then
-    workspace="$ZK_PATH/$1"
+    workspace="$1"
   fi
 
-  if [ ! -d "$workspace" ]; then
+  if [ ! -d "$ZK_PATH/$workspace" ]; then
     _error "Workspace $1 does not exist"
     exit 1
   fi
