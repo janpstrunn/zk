@@ -14,22 +14,22 @@ BLUE="$(tput setaf 87)"
 
 function help() {
   cat <<EOF
-zk | A Zettelkasten Helper
+$(_text "$BLUE" "zk | A Zettelkasten Helper")
 
-Usage:
+$(_text "$BLUE" "Usage")
   zk FLAG <FLAG_INPUT> COMMAND INPUT
   zk -h | zk help
 
-Commands:
-add FILENAME WORKSPACE       Add new note
-fzf WORKSPACE                Search all files with fzf
-journal DATE WORKSPACE       Add new journal entry
-list -d                      List all files
+$(_text "$BLUE" "Commands")
+  add FILENAME WORKSPACE       Add new note
+  fzf WORKSPACE                Search all files with fzf
+  journal DATE WORKSPACE       Add new journal entry
+  list -d                      List all files
 
-Flags:
--h            Displays this message and exits
---help        Displays this message and exits
--d            Search directories
+$(_text "$BLUE" "Flags")
+  -h            Displays this message and exits
+  --help        Displays this message and exits
+  -d            Search directories
 EOF
 }
 
