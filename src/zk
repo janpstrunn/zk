@@ -75,8 +75,9 @@ function _fzf_files() {
     workspace="$ZK_PATH/$1"
   fi
 
-  if [ -z "$workspace" ]; then
+  if [ ! -d "$workspace" ]; then
     _error "Workspace $1 does not exist"
+    exit 1
   fi
 
   mapfile -t zk_files < <(_display_all_files "$workspace" | fzf -m --preview "bat $ZK_PATH/{+}")
