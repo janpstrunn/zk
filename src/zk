@@ -52,7 +52,11 @@ function _error() {
 function _display_all_files() {
   local workspace=$1
 
-  find "$ZK_PATH/$workspace" -type f | sed -E "s|$ZK_PATH\/||"
+  if [ -n "$workspace" ]; then
+    find "$ZK_PATH/$workspace" -type f | sed -E "s|$ZK_PATH\/||"
+  else
+    find "$ZK_PATH" -type f | sed -E "s|$ZK_PATH\/||"
+  fi
 }
 
 function _display_workspaces() {
@@ -251,8 +255,9 @@ while [[ $# -gt 0 ]]; do
   list)
     _list
     ;;
-  *)
-    _list
-    ;;
   esac
 done
+
+if [ -z "$1" ]; then
+  _list
+fi
