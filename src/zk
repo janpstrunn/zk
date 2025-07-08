@@ -51,7 +51,7 @@ function _error() {
 function _display_all_files() {
   local workspace=$1
 
-  find "$ZK_PATH/$workspace" -type f | sed -E "s|$ZK_PATH\/||"
+  find "$ZK_PATH/$workspace" -type f &>/dev/null | sed -E "s|$ZK_PATH\/||"
 }
 
 function _display_workspaces() {
@@ -81,6 +81,10 @@ function _fzf_files() {
   fi
 
   mapfile -t zk_files < <(_display_all_files "$workspace" | fzf -m --preview "bat $ZK_PATH/{+}")
+
+  if [ -z "${zk_files[*]}" ]; then
+    exit 1 # Silent quit
+  fi
 
   for file in "${zk_files[@]}"; do
     open_files+=("$HOME/.zk/$file")
