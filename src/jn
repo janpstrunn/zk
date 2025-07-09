@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-ZK_PATH=${ZK_PATH:-$HOME/.zk/}
-ZK_TEMPLATE=${ZK_TEMPLATE:-$ZK_PATH/templates/}
-mapfile -t ZK_WORKSPACES < <(find "$ZK_PATH" -type d)
+JN_PATH=${JN_PATH:-$HOME/.jn/}
+JN_TEMPLATE=${JN_TEMPLATE:-$JN_PATH/templates/}
+mapfile -t jn_WORKSPACES < <(find "$JN_PATH" -type d)
 
-if [ ! -d "$ZK_PATH" ]; then
-  mkdir -p "$ZK_PATH"
+if [ ! -d "$JN_PATH" ]; then
+  mkdir -p "$JN_PATH"
 fi
 
 RED="$(tput setaf 196)"
@@ -14,11 +14,11 @@ BLUE="$(tput setaf 87)"
 
 function help() {
   cat <<EOF
-$(_text "$BLUE" "zk | A Zettelkasten Helper")
+$(_text "$BLUE" "jn | A Zettelkasten Helper")
 
 $(_text "$BLUE" "Usage")
-  zk FLAG <FLAG_INPUT> COMMAND INPUT
-  zk -h | zk help
+  jn FLAG <FLAG_INPUT> COMMAND INPUT
+  jn -h | jn help
 
 $(_text "$BLUE" "Commands")
   add FILENAME WORKSPACE       Add new note
@@ -50,20 +50,19 @@ function _error() {
 }
 
 function _display_all_files() {
-  local workspace=$1
-
   if [ -n "$workspace" ]; then
-    find "$ZK_PATH/$workspace" -type f | sed -E "s|$ZK_PATH\/||"
+    find "$JN_PATH/$workspace" -type f | sed -E "s|$JN_PATH\/||"
   else
-    find "$ZK_PATH" -type f | sed -E "s|$ZK_PATH\/||"
+    find "$JN_PATH" -type f | sed -E "s|$JN_PATH\/||"
   fi
 }
 
 function _display_workspaces() {
-  printf '%s\n' "${ZK_WORKSPACES[@]}"
+  printf '%s\n' "${jn_WORKSPACES[@]}"
 }
 
 function _list() {
+  workspace=$1
   if [[ "$DIR" -eq 1 ]]; then
     _display_workspaces
   else
@@ -75,25 +74,25 @@ function _list() {
 function _fzf_files() {
   local files
   local open_files=()
-  local zk_files=()
+  local jn_files=()
 
   if [ -n "$1" ]; then
     workspace="$1"
   fi
 
-  if [ ! -d "$ZK_PATH/$workspace" ]; then
+  if [ ! -d "$JN_PATH/$workspace" ]; then
     _error "Workspace $1 does not exist"
     exit 1
   fi
 
-  mapfile -t zk_files < <(_display_all_files "$workspace" | fzf -m --preview "bat $ZK_PATH/{+}")
+  mapfile -t jn_files < <(_display_all_files "$workspace" | fzf -m --preview "bat $JN_PATH/{+}")
 
-  if [ -z "${zk_files[*]}" ]; then
+  if [ -z "${jn_files[*]}" ]; then
     exit 1 # Silent quit
   fi
 
-  for file in "${zk_files[@]}"; do
-    open_files+=("$HOME/.zk/$file")
+  for file in "${jn_files[@]}"; do
+    open_files+=("$HOME/.jn/$file")
   done
   if [[ "$NO_EDIT" -eq 1 ]]; then
     for files in "${open_files[@]}"; do
@@ -107,19 +106,19 @@ function _fzf_files() {
 
 function _add_note() {
   local file=$1
-  local zk_workspace=$2
+  local jn_workspace=$2
 
   [[ -z "$file" ]] && {
     _error "No file specified!"
     exit 1
   }
-  [[ -z "$zk_workspace" ]] && zk_workspace=$(_display_workspaces | fzf --preview "eza -la $ZK_PATH/{}")
-  touch "$zk_workspace/$file.md" && $EDITOR "$file.md"
+  [[ -z "$jn_workspace" ]] && jn_workspace=$(_display_workspaces | fzf --preview "eza -la $JN_PATH/{}")
+  touch "$jn_workspace/$file.md" && $EDITOR "$file.md"
   exit 0
 }
 
 function _apply_template() {
-  local template="$ZK_TEMPLATE/$1"
+  local template="$JN_TEMPLATE/$1"
   local destination=$2
 
   if [ ! -f "$destination" ]; then
@@ -172,7 +171,7 @@ function _add_journal_entry() {
   local val
 
   if [ -n "$2" ]; then
-    workspace="$ZK_PATH/$2"
+    workspace="$JN_PATH/$2"
     mkdir -p "$workspace"
   fi
 
@@ -188,11 +187,11 @@ function _add_journal_entry() {
     date="$year"
   else
     _error "No date specified!"
-    echo "Usage: zk journal day/week/month/year workspace"
+    echo "Usage: jn journal day/week/month/year workspace"
     exit 1
   fi
 
-  [[ -z "$workspace" ]] && workspace=$(_display_workspaces | fzf --preview "eza -la $ZK_PATH/{}")
+  [[ -z "$workspace" ]] && workspace=$(_display_workspaces | fzf --preview "eza -la $JN_PATH/{}")
 
   filename="$date"
   _apply_template "$requested_date.md" "$workspace/$filename.md" "$is_journal"
@@ -253,7 +252,8 @@ while [[ $# -gt 0 ]]; do
     _add_journal_entry "$@" # date, workspace
     ;;
   list)
-    _list
+    shift
+    _list "$@" # workspace
     ;;
   esac
 done
