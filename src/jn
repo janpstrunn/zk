@@ -14,7 +14,7 @@ BLUE="$(tput setaf 87)"
 
 function help() {
   cat <<EOF
-$(_text "$BLUE" "jn | A Zettelkasten Helper")
+$(_text "$BLUE" "jn | Journal Notes")
 
 $(_text "$BLUE" "Usage")
   jn FLAG <FLAG_INPUT> COMMAND INPUT
@@ -27,10 +27,10 @@ $(_text "$BLUE" "Commands")
   list                         List all files
 
 $(_text "$BLUE" "Flags")
-  -d            Search directories
   -h            Displays this message and exits
   --help        Displays this message and exits
   -n            Do not edit
+  -w            Search directories
 EOF
 }
 
@@ -63,6 +63,7 @@ function _display_workspaces() {
 
 function _list() {
   workspace=$1
+
   if [[ "$DIR" -eq 1 ]]; then
     _display_workspaces
   else
@@ -209,7 +210,7 @@ function _add_journal_entry() {
   exit 0
 }
 
-while getopts ":hd-n" opt; do
+while getopts ":hw-n" opt; do
   case "$opt" in
   h)
     help
@@ -221,7 +222,7 @@ while getopts ":hd-n" opt; do
   n)
     NO_EDIT=1
     ;;
-  d)
+  w)
     DIR=1
     ;;
   ?)
