@@ -9,7 +9,7 @@
   - Weekly Notes
   - Monthly Notes
   - Yearly Notes
-- **Search:** Utilize `fzf` for searching through your notes
+- **Search:** Utilize `fzf` for searching through your notes. Empower your search using `rg`
 - **Add Normal Notes:** Create standalone notes
 - **Multiple Workspaces:** Aggregate different notes into different directories (workspaces)
 - **List Notes:** List all notes or workspaces
