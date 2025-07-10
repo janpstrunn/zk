@@ -52,9 +52,9 @@ function _error() {
 
 function _display_all_files() {
   if [ -n "$workspace" ]; then
-    find "$JN_PATH/$workspace" -type f | sed -E "s|$JN_PATH\/||"
+    find -L "$JN_PATH/$workspace" -type f | sed -E "s|$JN_PATH\/||"
   else
-    find "$JN_PATH" -type f | sed -E "s|$JN_PATH\/||"
+    find -L "$JN_PATH" -type f | sed -E "s|$JN_PATH\/||"
   fi
 }
 
@@ -81,6 +81,8 @@ function _rg() {
   fzf --disabled --ansi --multi \
     --bind 'alt-a:select-all,alt-d:deselect-all,ctrl-p:toggle-preview' \
     --bind "start:$RG_RELOAD" --bind "change:$RG_RELOAD" \
+    --bind='alt-up:preview-up,alt-k:preview-up' \
+    --bind='alt-down:preview-down,alt-j:preview-down' \
     --delimiter : \
     --header "$HEADER" \
     --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
@@ -97,6 +99,8 @@ function _fzf() {
   _display_all_files "$workspace" | fzf --ansi --multi --tmux 88% \
     --bind "$DELETE_BIND" \
     --bind 'alt-a:select-all,alt-s:deselect-all,ctrl-p:toggle-preview' \
+    --bind='alt-up:preview-up,alt-k:preview-up' \
+    --bind='alt-down:preview-down,alt-j:preview-down' \
     --delimiter : \
     --header "$HEADER" \
     --preview "bat --color=always $JN_PATH/$workspace{}" \
