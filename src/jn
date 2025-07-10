@@ -87,7 +87,7 @@ function _fzf() {
     --delimiter : \
     --header "$HEADER" \
     --preview "bat --color=always $JN_PATH/$workspace{}" \
-    --preview-window right:55% \
+    --preview-window up:65% \
     --prompt "$PROMPT"
 }
 
