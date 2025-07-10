@@ -30,7 +30,7 @@ $(_text "$BLUE" "Flags")
   -h            Displays this message and exits
   --help        Displays this message and exits
   -n            Do not edit
-  -w            Search directories
+  -w            Search workspaces
 EOF
 }
 

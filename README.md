@@ -47,7 +47,7 @@ Flags:
   -h            Displays this message and exits
   --help       Displays this message and exits
   -n            Do not edit the note after creation
-  -w            Search directories
+  -w            Search workspaces
 ```
 
 ### Examples
