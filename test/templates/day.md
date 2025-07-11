@@ -1,8 +1,8 @@
 ---
-week: [[2025-W29]]
+week: [[{{week}}]]
 ---
 
-# 2025-07-10
+# {{day}}
 
 ## Journal
 
@@ -13,9 +13,9 @@ week: [[2025-W29]]
 - **Key-words**
 - **Emotions**
 - **Gratitude**
-  1.
-  2.
-  3.
+    1.
+    2.
+    3.
 
 ## Review
 
