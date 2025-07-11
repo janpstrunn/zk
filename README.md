@@ -46,8 +46,9 @@ Commands:
 
 Flags:
   -h            Displays this message and exits
-  --help       Displays this message and exits
-  -n            Do not edit the note after creation
+  --help        Displays this message and exits
+  -n            Do not edit
+  -t TEMPLATE   Select a template
   -w            Search workspaces
 ```
 
