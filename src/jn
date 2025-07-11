@@ -112,8 +112,9 @@ function _fzf() {
 
 function _fzf_files() {
   local files
-  local open_files=()
   local jn_files=()
+  local line_number
+  local open_files=()
 
   if [ -n "$1" ]; then
     workspace="$1"
@@ -130,7 +131,9 @@ function _fzf_files() {
     mapfile -t jn_files < <(_fzf)
   else
     # shellcheck disable=SC2119
-    mapfile -t jn_files < <(_rg | awk -F ':' '{print $1}')
+    mapfile -t jn_files < <(_rg)
+    mapfile -t line_number < <(awk -F ':' '{print $2}' <<<"${jn_files[@]}")
+    mapfile -t jn_files < <(awk -F ':' '{print $1}' <<<"${jn_files[@]}")
   fi
 
   if [ -z "${jn_files[*]}" ]; then
@@ -145,7 +148,11 @@ function _fzf_files() {
       echo "$files"
     done
   else
-    $EDITOR "${open_files[@]}"
+    if [[ "$FZF_MODE" -eq 1 ]]; then
+      $EDITOR "${open_files[@]}"
+    else
+      $EDITOR "+${line_number[*]}" "${open_files[@]}"
+    fi
   fi
   exit 0
 }
