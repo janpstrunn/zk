@@ -111,9 +111,9 @@ function _fzf() {
 }
 
 function _fzf_files() {
-  local files
+  local filenames=()
   local jn_files=()
-  local line_number
+  local line_number=()
   local open_files=()
 
   if [ -n "$1" ]; then
@@ -127,32 +127,30 @@ function _fzf_files() {
 
   PROMPT="Choose a file to read: "
   if [[ "$FZF_MODE" -eq 1 ]]; then
-    # shellcheck disable=SC2119
     mapfile -t jn_files < <(_fzf)
   else
-    # shellcheck disable=SC2119
-    mapfile -t jn_files < <(_rg)
-    mapfile -t line_number < <(awk -F ':' '{print $2}' <<<"${jn_files[@]}")
-    mapfile -t jn_files < <(awk -F ':' '{print $1}' <<<"${jn_files[@]}")
+    mapfile -t jn_rgfiles < <(_rg)
+    for entry in "${jn_rgfiles[@]}"; do
+      IFS=':' read -r filename line <<<"$entry"
+      jn_files+=("$filename")
+      line_number+=("$(awk -F ":" '{print $1}' <<<"$line")")
+    done
   fi
 
   if [ -z "${jn_files[*]}" ]; then
     exit 1 # Silent quit
   fi
 
-  for file in "${jn_files[@]}"; do
-    open_files+=("$HOME/.jn/$file")
-  done
-  if [[ "$NO_EDIT" -eq 1 ]]; then
-    for files in "${open_files[@]}"; do
-      echo "$files"
+  if [[ "$EDITOR" == "nvim" ]] && [[ "$FZF_MODE" -ne 1 ]]; then
+    for i in "${!jn_files[@]}"; do
+      args+=("-c edit +${line_number[i]} ${jn_files[i]}")
     done
+    $EDITOR "${args[@]}"
   else
-    if [[ "$FZF_MODE" -eq 1 ]]; then
-      $EDITOR "${open_files[@]}"
-    else
-      $EDITOR "+${line_number[*]}" "${open_files[@]}"
-    fi
+    for file in "${jn_files[@]}"; do
+      open_files+=("$HOME/.jn/$file")
+    done
+    $EDITOR "${open_files[@]}"
   fi
   exit 0
 }
@@ -175,7 +173,11 @@ function _add_note() {
   _apply_template "$jn_workspace/$file.md"
   val=$?
   _template_variable_parser "$jn_workspace/$file.md"
-  [[ "$val" -eq 0 ]] && $EDITOR "$jn_workspace/$file.md"
+  if [[ "$NO_EDIT" -ne 1 ]]; then
+    [[ "$val" -eq 0 ]] && $EDITOR "$jn_workspace/$file.md"
+  else
+    _text "$GREEN" "Created note: $file"
+  fi
   exit 0
 }
 
